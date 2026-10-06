@@ -12,10 +12,10 @@
 
 <style>
 :root{
-  --ink:#2a313a;
+  --ink:#4a525c;
   --text:#EDEFF2;
-  --muted:#A9B2BB;
-  --faint:#808A94;
+  --muted:#C6CDD4;
+  --faint:#A2ACB6;
   --accent:#A6C6DC;
   --stroke:rgba(255,255,255,.12);
   --stroke-2:rgba(255,255,255,.20);
@@ -42,7 +42,7 @@ img{max-width:100%;display:block}
 #board{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .veil{
   position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(120% 80% at 50% 0%,rgba(42,49,58,0) 40%,rgba(30,36,43,.45) 100%);
+  background:radial-gradient(120% 80% at 50% 0%,rgba(74,82,92,0) 35%,rgba(50,56,64,.6) 100%);
 }
 
 main{position:relative;z-index:2}
@@ -64,7 +64,7 @@ h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:38px}
 .nav{
   position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:50;
   display:flex;gap:2px;padding:6px 7px;border-radius:999px;
-  background:rgba(48,56,66,.6);border:1px solid var(--stroke);
+  background:rgba(62,70,80,.6);border:1px solid var(--stroke);
   backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 18px 40px -26px rgba(0,0,0,.6);
 }
@@ -90,7 +90,7 @@ h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:38px}
 .avatar img,.avatar .ph{width:100%;height:100%;border-radius:50%;object-fit:cover}
 .avatar .ph{
   display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(160deg,#3a434e,#2a313a);
+  background:linear-gradient(160deg,#5a636e,#4a525c);
   font-family:var(--display);font-size:2rem;color:var(--faint);
 }
 .hero h1{font-size:clamp(2.6rem,8vw,5.4rem);line-height:.95;margin-bottom:20px}
@@ -276,7 +276,6 @@ body.lb-open{overflow:hidden}
   <a href="#work">Portfolio</a>
   <a href="#experience">Experience</a>
   <a href="#skills">Skills</a>
-  <a href="#contact">Contact</a>
 </nav>
 
 <main>
@@ -322,19 +321,6 @@ body.lb-open{overflow:hidden}
     <div class="wrap">
       <h2 class="rise">Skills</h2>
       <div class="skills" id="skills-grid"></div>
-    </div>
-  </section>
-
-  <section class="section" id="contact">
-    <div class="wrap">
-      <div class="glass contact rise">
-        <h2 style="margin-bottom:24px">Let's connect</h2>
-        <div class="actions">
-          <a class="btn" href="mailto:ishekhib@uwo.ca">Email</a>
-          <a class="btn" href="https://www.linkedin.com/in/ibrahim-shekhibrahim" target="_blank" rel="noopener">LinkedIn</a>
-          <a class="btn" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -675,14 +661,14 @@ function observe(){
     const c=still.getContext('2d');
     c.scale(dpr,dpr); c.lineJoin='round'; c.lineCap='round';
     traces.forEach(t=>{
-      c.strokeStyle='rgba(255,255,255,.09)'; c.lineWidth=1.1;
+      c.strokeStyle='rgba(255,255,255,.075)'; c.lineWidth=1.1;
       c.beginPath(); c.moveTo(t.pts[0].x,t.pts[0].y);
       for(let i=1;i<t.pts.length;i++) c.lineTo(t.pts[i].x,t.pts[i].y);
       c.stroke();
       t.pts.forEach((p,i)=>{
         if(i===0||i===t.pts.length-1||Math.random()<.35){
           c.beginPath(); c.arc(p.x,p.y,2.2,0,Math.PI*2);
-          c.strokeStyle='rgba(255,255,255,.16)'; c.lineWidth=1; c.stroke();
+          c.strokeStyle='rgba(255,255,255,.14)'; c.lineWidth=1; c.stroke();
         }
       });
     });
