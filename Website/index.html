@@ -114,6 +114,24 @@ h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:38px}
 .btn--icon{padding:13px}
 .btn--icon svg{width:17px;height:17px}
 
+/* project photo belt behind avatar */
+.reel-row{position:relative;margin-bottom:32px}
+.reel-row .avatar{
+  margin-bottom:0;position:relative;z-index:1;
+  background:#525a64;backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+.reel{
+  position:absolute;top:0;left:50%;width:100vw;height:190px;
+  margin-left:-50vw;overflow:hidden;pointer-events:none;opacity:.45;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);
+}
+.reel-track{position:relative;width:100%;height:100%}
+.reel-track img{
+  position:absolute;top:0;left:0;height:100%;max-width:none;object-fit:cover;
+  border-radius:16px;border:1px solid var(--stroke);will-change:transform;
+}
+
 /* project cards — title only */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 .card{
@@ -254,6 +272,7 @@ body.lb-open{overflow:hidden}
   .nav{width:calc(100% - 24px);overflow-x:auto;border-radius:16px;justify-content:flex-start}
   .nav::-webkit-scrollbar{display:none}
   .avatar{width:150px;height:150px}
+  .reel{height:150px}
   .btn{flex:1 1 auto;justify-content:center}
   .row{flex-direction:column;gap:6px}
   #lightbox{padding:20px}
@@ -282,18 +301,17 @@ body.lb-open{overflow:hidden}
 <div id="view-home">
 
   <header class="hero" id="top">
-    <div class="avatar">
-      <img id="portrait" src="assets/profile.jpg" alt="Ibrahim Shekhibrahim" />
+    <div class="reel-row">
+      <div class="reel" aria-hidden="true"><div class="reel-track" id="reel-track"></div></div>
+      <div class="avatar">
+        <img id="portrait" src="assets/profile.jpg" alt="Ibrahim Shekhibrahim" />
+      </div>
     </div>
     <h1>Ibrahim<br>Shekhibrahim</h1>
     <p class="role">Electrical Engineering &middot; AI Systems</p>
     <p class="school">Western University &middot; B.E.Sc. 2028</p>
 
     <div class="actions">
-      <a class="btn" href="assets/resume.pdf" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-        Resume
-      </a>
       <a class="btn btn--icon" href="https://www.linkedin.com/in/ibrahim-shekhibrahim" target="_blank" rel="noopener" aria-label="LinkedIn">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95C20.4 8.75 21 11.1 21 14.2V21h-4v-6c0-1.43-.03-3.27-2-3.27-2 0-2.3 1.56-2.3 3.17V21H9z"/></svg>
       </a>
@@ -535,6 +553,68 @@ const $ = s => document.querySelector(s);
 
 const portrait = $('#portrait');
 portrait.addEventListener('error', () => { portrait.outerHTML = '<div class="ph">IS</div>'; });
+
+/* =========================================================
+   PHOTO BELT — photos enter on the left, exit on the right, repeat
+   ========================================================= */
+(function belt(){
+  const SPEED = 40;  // pixels per second — higher = faster
+  const GAP = 14;    // space between photos
+
+  const track = $('#reel-track');
+  const srcs = PROJECTS.flatMap(p => p.images.map(i => i.src));
+  if (!srcs.length) return;
+
+  // load every photo first, skip any that are missing
+  Promise.all(srcs.map(src => new Promise(done => {
+    const im = new Image();
+    im.onload = () => done(src);
+    im.onerror = () => done(null);
+    im.src = src;
+  }))).then(list => {
+    const ok = list.filter(Boolean);
+    if (!ok.length) return;
+
+    let items = [], step = 0, loop = 0, offset = 0, last = null;
+
+    function build(){
+      const h = track.clientHeight;
+      const w = Math.round(h * 4 / 3);
+      step = w + GAP;
+      const slots = Math.max(ok.length, Math.ceil(track.clientWidth / step) + 1);
+      loop = slots * step;
+      track.innerHTML = '';
+      items = [];
+      for (let i = 0; i < slots; i++){
+        const im = document.createElement('img');
+        im.src = ok[i % ok.length];
+        im.alt = '';
+        im.style.width = w + 'px';
+        track.appendChild(im);
+        items.push(im);
+      }
+      place();
+    }
+
+    function place(){
+      items.forEach((im, i) => {
+        const x = ((i * step + offset) % loop) - step;
+        im.style.transform = `translate3d(${x}px,0,0)`;
+      });
+    }
+
+    function tick(t){
+      if (last !== null) offset = (offset + SPEED * Math.min(t - last, 100) / 1000) % loop;
+      last = t;
+      place();
+      requestAnimationFrame(tick);
+    }
+
+    build();
+    let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 200); });
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(tick);
+  });
+})();
 
 $('#project-grid').innerHTML = PROJECTS.map(p =>
   `<a class="card glass rise" href="#/p/${p.id}">${p.title}</a>`).join('');
