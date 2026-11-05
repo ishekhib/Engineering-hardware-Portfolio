@@ -160,6 +160,31 @@ h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:38px}
 .row .org{color:var(--muted);font-size:13.5px;margin-top:2px}
 .row .when{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap;flex-shrink:0}
 
+/* experience — click to expand */
+.xp{border-bottom:1px solid var(--stroke)}
+.xp .row{
+  width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;
+}
+.xp .row .when{display:inline-flex;align-items:center;gap:10px}
+.xp .chev{
+  width:12px;height:12px;flex-shrink:0;opacity:.7;
+  transition:transform .35s var(--ease);
+}
+.xp.open .chev{transform:rotate(180deg)}
+.xp-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease)}
+.xp.open .xp-body{grid-template-rows:1fr}
+.xp-inner{overflow:hidden}
+.xp-inner ul{margin:0;padding:2px 6px 22px;list-style:none}
+.xp-inner li{
+  position:relative;padding-left:20px;margin-bottom:10px;
+  color:var(--muted);font-size:14px;line-height:1.6;
+}
+.xp-inner li:last-child{margin-bottom:0}
+.xp-inner li::before{
+  content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;
+  border:1px solid rgba(166,198,220,.55);background:rgba(166,198,220,.12);
+}
+
 /* skills */
 .skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
 .skillbox{padding:22px;border-radius:16px}
@@ -531,14 +556,45 @@ const PROJECTS = [
 ];
 
 const EXPERIENCE = [
-  {role:'Research Assistant (Work-Study)', org:'Prof. Anestis Dounavis, Western University', when:'Sep 2026 — Present'},
-  {role:'VP Internal', org:'Undergraduate Engineering Society', when:'Apr 2026 — Present'},
-  {role:'Club President', org:'Western Kurdish Students Association', when:'Dec 2024 — Apr 2026'},
-  {role:'Sales Consultant', org:'Bell Canada', when:'Apr — Oct 2025'},
-  {role:'Electrical Lead Assistant', org:'Western Engineering Rocketry Club', when:'Sep 2024 — May 2025'},
-  {role:'Student Ambassador', org:'Western Engineering', when:'Sep 2024 — May 2025'},
-  {role:'First &amp; Second Year Representative', org:'Undergraduate Engineering Society', when:'Sep 2023 — May 2024'},
-  {role:'FIRST Robotics Club Captain', org:'Westminster Secondary School', when:'Sep 2022 — Jun 2023'}
+  {role:'Research Assistant (Work-Study)', org:'Prof. Anestis Dounavis, Western University', when:'Sep 2026 — Present', points:[
+    'Support research on transmission line modeling and simulation, studying signal propagation and distortion in high-speed interconnects at the chip, package, and board levels.',
+    'Assist with macromodeling, sensitivity analysis, and model-order reduction to simplify large circuit models while preserving simulation accuracy.'
+  ]},
+  {role:'VP Internal', org:'Undergraduate Engineering Society', when:'Apr 2026 — Present', points:[
+    'Co-chair the Clubs Commission, representing 35+ engineering clubs, design teams, and student groups.',
+    'Supervise a team of officers, conducting mid-year and end-of-year performance reviews.',
+    'Developed and enforce club training requirements, monitoring compliance with operating policies.',
+    'Sit on the board of a $500,000 student donation fund, helping allocate funding to student projects.',
+    'Serve as the main liaison with student societies and the Faculty of Engineering.'
+  ]},
+  {role:'Club President', org:'Western Kurdish Students Association', when:'Dec 2024 — Apr 2026', points:[
+    'Founded and ratified the association through Western University\'s student governance.',
+    'Led the executive team and organized events, building new VP and director roles.'
+  ]},
+  {role:'Sales Consultant', org:'Bell Canada', when:'Apr — Oct 2025', points:[
+    'Provided technical support and troubleshooting for mobile devices, electronics, and service activations.',
+    'Helped customers evaluate telecom plans and hardware, recommending solutions based on their needs.',
+    'Managed activations, upgrades, and transactions through point-of-sale and carrier systems with accuracy.',
+    'Consistently met personal and team sales targets in a fast-paced environment.'
+  ]},
+  {role:'Electrical Lead Assistant', org:'Western Engineering Rocketry Club', when:'Sep 2024 — May 2025', points:[
+    'Supported the design of an altitude-based parachute deployment system using GPS sensors for safe recovery at national competitions.',
+    'Helped with sensor calibration, wiring, and test simulations to ensure reliable performance.'
+  ]},
+  {role:'Student Ambassador', org:'Western Engineering', when:'Sep 2024 — May 2025', points:[
+    'Represented Western Engineering at outreach events, including helping organize the annual Open House.',
+    'Mentored and supported new students as they transitioned to university life.'
+  ]},
+  {role:'First &amp; Second Year Representative', org:'Undergraduate Engineering Society', when:'Sep 2023 — May 2024', points:[
+    'Represented 900+ Electrical Engineering students on student council.',
+    'Worked with deans and professors across Engineering and Physics to resolve exam scheduling conflicts.',
+    'Supported peers in software labs and helped organize faculty-funded initiatives.'
+  ]},
+  {role:'FIRST Robotics Club Captain', org:'Westminster Secondary School', when:'Sep 2022 — Jun 2023', points:[
+    'Led the design and build of a $9,000 competition robot, combining mechanical design, electronics, and programming.',
+    'Troubleshot problems through build and competition to meet strict performance requirements.',
+    'Mentored and coordinated junior team members.'
+  ]}
 ];
 
 const SKILLS = [
@@ -622,10 +678,25 @@ $('#project-grid').innerHTML = PROJECTS.map(p =>
   `<a class="card glass rise" href="#/p/${p.id}">${p.title}</a>`).join('');
 
 $('#experience-rows').innerHTML = EXPERIENCE.map(e => `
-  <div class="row">
-    <div><div class="role">${e.role}</div><div class="org">${e.org}</div></div>
-    <div class="when">${e.when}</div>
+  <div class="xp">
+    <button class="row" type="button" aria-expanded="false">
+      <div><div class="role">${e.role}</div><div class="org">${e.org}</div></div>
+      <div class="when">${e.when}
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </button>
+    <div class="xp-body"><div class="xp-inner">
+      <ul>${(e.points||[]).map(pt=>`<li>${pt}</li>`).join('')}</ul>
+    </div></div>
   </div>`).join('');
+
+$('#experience-rows').addEventListener('click', ev => {
+  const btn = ev.target.closest('.xp .row');
+  if (!btn) return;
+  const item = btn.parentElement;
+  const open = item.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+});
 
 $('#skills-grid').innerHTML = SKILLS.map(s => `
   <div class="skillbox glass rise">
